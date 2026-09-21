@@ -33,7 +33,7 @@
     
     <!-- Top Header Bar -->
     <div class="bg-emerald-800 text-white p-6 text-center relative">
-      <h1 class="font-handwriting text-4xl mb-1">Happy Birthday! ❤️</h1>
+      <h1 class="font-handwriting text-4xl mb-1">Happy Birthday Alice! ❤️</h1>
       <p class="text-xs uppercase tracking-widest text-emerald-200">Catbells Expedition Scavenger Hunt</p>
     </div>
 
@@ -80,7 +80,7 @@
 
         <!-- Submit & Verification Button -->
         <button id="verify-btn" onclick="verifyPhoto()" disabled class="w-full py-3.5 px-4 bg-slate-300 text-slate-500 font-bold rounded-2xl transition-all duration-200 flex items-center justify-center gap-2">
-          <i class="fa-solid fa-sparkles"></i> Scan Photo with AI
+          <i class="fa-solid fa-magnifying-glass"></i> Scan
         </button>
       </div>
 
@@ -93,7 +93,7 @@
       <div class="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
         <i class="fa-solid fa-champagne-glasses"></i>
       </div>
-      <h2 class="font-handwriting text-3xl text-slate-800 mb-2">You Made It! 🎉</h2>
+      <h2 class="font-handwriting text-3xl text-slate-800 mb-2">You Made It, Alice! 🎉</h2>
       <p class="text-sm text-slate-600 mb-6">You've conquered the trail and completed all the clues! Here is your final grand destination:</p>
 
       <div class="bg-amber-50 border-2 border-amber-300 rounded-2xl p-5 mb-6 text-left shadow-md">
@@ -117,55 +117,55 @@
         number: 7,
         title: "Something Vividly Green",
         description: "As we start our adventure, spot and capture something bright green along the path - a lush patch of fern, moss, or leaves!",
-        keywords: ["leaf", "plant", "tree", "grass", "moss", "fern", "garden", "hedge"]
+        keywords: ["leaf", "plant", "tree", "grass", "moss", "fern", "hedge", "foliage", "flora"]
       },
       {
         number: 8,
         title: "A Great Panoramic View",
         description: "We are getting higher! Snap a photo looking out across the landscape or over towards Derwentwater.",
-        keywords: ["valley", "mountain", "alp", "cliff", "lakeside", "promontory", "seashore", "sky", "cloud"]
+        keywords: ["valley", "mountain", "alp", "cliff", "lakeside", "promontory", "sky", "cloud", "horizon", "scenery"]
       },
       {
         number: 9,
         title: "Natural Rock / Stone",
         description: "Find a distinctive rock formation, stone marker, or crag along the path upward.",
-        keywords: ["rock", "stone", "boulder", "cliff", "promontory", "wall", "gravel"]
+        keywords: ["rock", "stone", "boulder", "cliff", "promontory", "wall", "gravel", "slate"]
       },
       {
         number: 10,
         title: "Water / Derwentwater",
         description: "Capture the sparkling water below or a distant boat drifting on the lake.",
-        keywords: ["lakeside", "water", "lake", "ocean", "sea", "pier", "boat", "canoe", "reflections"]
+        keywords: ["lakeside", "water", "lake", "ocean", "sea", "pier", "boat", "canoe", "reflections", "shore"]
       },
       {
         number: 11,
-        title: "A Summit Landmark or Sign",
+        title: "A Trail Marker or Sign",
         description: "Take a picture of a trail sign, wooden post, cairn, or summit marker near the top!",
-        keywords: ["sign", "post", "marker", "wood", "structure", "pole", "banner"]
+        keywords: ["sign", "post", "marker", "wood", "structure", "pole", "banner", "board"]
       },
       {
         number: 12,
         title: "A Friendly Four-Legged Walker",
         description: "Say hi to a dog walking past on the trail, or spot some local wildlife / farm animals nearby!",
-        keywords: ["dog", "puppy", "hound", "retriever", "terrier", "sheep", "animal", "bovid", "horse"]
+        keywords: ["dog", "puppy", "hound", "retriever", "terrier", "sheep", "animal", "bovid", "horse", "cow"]
       },
       {
         number: 13,
         title: "A Trail Marker or Path",
         description: "Capture the winding footpath leading us back down toward the village.",
-        keywords: ["path", "trail", "dirt", "gravel", "track", "road", "footpath"]
+        keywords: ["path", "trail", "dirt", "gravel", "track", "road", "footpath", "walkway"]
       },
       {
         number: 14,
         title: "Something Orange",
         description: "Keep your eyes peeled for something bright orange - a jacket, sign, flower, or leaf!",
-        keywords: ["orange", "flower", "fruit", "jacket", "sign", "car", "bucket", "umbrella"]
+        keywords: ["orange", "flower", "fruit", "jacket", "sign", "car", "bucket", "umbrella", "backpack"]
       },
       {
         number: 15,
         title: "A Cosy Spot or Building",
         description: "We are getting close! Snap a photo of a quaint stone building, shopfront, or cafe on our way into town.",
-        keywords: ["building", "house", "shop", "storefront", "cafe", "restaurant", "window", "door"]
+        keywords: ["building", "house", "shop", "storefront", "cafe", "restaurant", "window", "door", "cottage"]
       }
     ];
 
@@ -179,14 +179,14 @@
       updateUI();
       
       const statusMsg = document.getElementById('status-message');
-      statusMsg.innerHTML = `<span class="text-amber-600"><i class="fa-solid fa-circle-notch fa-spin"></i> Initializing AI Vision Model...</span>`;
+      statusMsg.innerHTML = `<span class="text-amber-600"><i class="fa-solid fa-circle-notch fa-spin"></i> Loading scanner...</span>`;
       
       try {
         classifierModel = await mobilenet.load();
-        statusMsg.innerHTML = `<span class="text-emerald-600"><i class="fa-solid fa-circle-check"></i> AI Ready! Let's hunt.</span>`;
-        setTimeout(() => statusMsg.innerHTML = '', 3000);
+        statusMsg.innerHTML = `<span class="text-emerald-600"><i class="fa-solid fa-circle-check"></i> Scanner Ready!</span>`;
+        setTimeout(() => statusMsg.innerHTML = '', 2500);
       } catch (err) {
-        statusMsg.innerHTML = `<span class="text-xs text-amber-700">AI initialized with basic matching. Ready!</span>`;
+        statusMsg.innerHTML = `<span class="text-xs text-amber-700">Scanner Ready!</span>`;
       }
     });
 
@@ -257,50 +257,44 @@
       if (!selectedImage) return;
 
       const statusMsg = document.getElementById('status-message');
-      statusMsg.innerHTML = `<span class="text-amber-600"><i class="fa-solid fa-spinner fa-spin"></i> Analyzing photo with AI...</span>`;
+      statusMsg.innerHTML = `<span class="text-amber-600"><i class="fa-solid fa-spinner fa-spin"></i> Scanning photo...</span>`;
 
       try {
         let isAccepted = false;
         const currentKeywords = clues[currentStep].keywords;
 
         if (classifierModel) {
-          const predictions = await classifierModel.classify(selectedImage);
-          console.log("AI Predictions:", predictions);
+          // Classify the top 5 matches
+          const predictions = await classifierModel.classify(selectedImage, 5);
+          console.log("Scan results:", predictions);
 
           // Check if top AI predictions match clue keywords
           isAccepted = predictions.some(pred => {
             const classLower = pred.className.toLowerCase();
-            return currentKeywords.some(kw => classLower.includes(kw.toLowerCase())) && pred.probability > 0.05;
+            return currentKeywords.some(kw => classLower.includes(kw.toLowerCase())) && pred.probability > 0.03;
           });
         }
 
-        // Fallback / Gentle Auto-Acceptance if AI isn't 100% sure so she never gets stuck!
-        if (!isAccepted) {
-          isAccepted = true; // Auto-approves so your birthday walk keeps moving smoothly!
-        }
-
         if (isAccepted) {
-          statusMsg.innerHTML = `<span class="text-emerald-600 font-bold"><i class="fa-solid fa-circle-check"></i> Clue Accepted! Moving to next clue...</span>`;
+          statusMsg.innerHTML = `<span class="text-emerald-600 font-bold"><i class="fa-solid fa-circle-check"></i> Photo accepted! Unlocking next clue...</span>`;
           setTimeout(() => {
             currentStep++;
             saveProgress();
             updateUI();
           }, 1500);
         } else {
-          statusMsg.innerHTML = `<span class="text-rose-600 font-bold"><i class="fa-solid fa-circle-xmark"></i> Hmm, AI wasn't sure! Try getting a bit closer and take another photo.</span>`;
+          // Strict rejection path
+          statusMsg.innerHTML = `<span class="text-rose-600 font-bold"><i class="fa-solid fa-circle-xmark"></i> That doesn't look quite right! Try getting a clearer picture.</span>`;
         }
 
       } catch (err) {
         console.error(err);
-        // Fallback progress on error
-        currentStep++;
-        saveProgress();
-        updateUI();
+        statusMsg.innerHTML = `<span class="text-rose-600 font-bold"><i class="fa-solid fa-circle-xmark"></i> Couldn't verify photo. Please try again!</span>`;
       }
     }
 
     function resetHunt() {
-      if (confirm("Are you sure you want to reset the scavenger hunt to Clue 7?")) {
+      if (confirm("Reset scavenger hunt progress back to Clue 7?")) {
         currentStep = 0;
         saveProgress();
         document.getElementById('final-screen').classList.add('hidden');
