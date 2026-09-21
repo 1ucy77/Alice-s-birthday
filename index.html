@@ -116,78 +116,56 @@
       {
         number: 7,
         title: "Something Vividly Green",
-        description: "As we start our adventure, spot and capture something bright green along the path - a lush patch of fern, moss, or leaves!",
-        keywords: ["leaf", "plant", "tree", "grass", "moss", "fern", "hedge", "foliage", "flora"]
+        description: "As we start our adventure, spot and capture something bright green along the path - a lush patch of fern, moss, or leaves!"
       },
       {
         number: 8,
         title: "A Great Panoramic View",
-        description: "We are getting higher! Snap a photo looking out across the landscape or over towards Derwentwater.",
-        keywords: ["valley", "mountain", "alp", "cliff", "lakeside", "promontory", "sky", "cloud", "horizon", "scenery"]
+        description: "We are getting higher! Snap a photo looking out across the landscape or over towards Derwentwater."
       },
       {
         number: 9,
         title: "Natural Rock / Stone",
-        description: "Find a distinctive rock formation, stone marker, or crag along the path upward.",
-        keywords: ["rock", "stone", "boulder", "cliff", "promontory", "wall", "gravel", "slate"]
+        description: "Find a distinctive rock formation, stone marker, or crag along the path upward."
       },
       {
         number: 10,
         title: "Water / Derwentwater",
-        description: "Capture the sparkling water below or a distant boat drifting on the lake.",
-        keywords: ["lakeside", "water", "lake", "ocean", "sea", "pier", "boat", "canoe", "reflections", "shore"]
+        description: "Capture the sparkling water below or a distant boat drifting on the lake."
       },
       {
         number: 11,
         title: "A Trail Marker or Sign",
-        description: "Take a picture of a trail sign, wooden post, cairn, or summit marker near the top!",
-        keywords: ["sign", "post", "marker", "wood", "structure", "pole", "banner", "board"]
+        description: "Take a picture of a trail sign, wooden post, cairn, or summit marker near the top!"
       },
       {
         number: 12,
         title: "A Friendly Four-Legged Walker",
-        description: "Say hi to a dog walking past on the trail, or spot some local wildlife / farm animals nearby!",
-        keywords: ["dog", "puppy", "hound", "retriever", "terrier", "sheep", "animal", "bovid", "horse", "cow"]
+        description: "Say hi to a dog walking past on the trail, or spot some local wildlife / farm animals nearby!"
       },
       {
         number: 13,
         title: "A Trail Marker or Path",
-        description: "Capture the winding footpath leading us back down toward the village.",
-        keywords: ["path", "trail", "dirt", "gravel", "track", "road", "footpath", "walkway"]
+        description: "Capture the winding footpath leading us back down toward the village."
       },
       {
         number: 14,
         title: "Something Orange",
-        description: "Keep your eyes peeled for something bright orange - a jacket, sign, flower, or leaf!",
-        keywords: ["orange", "flower", "fruit", "jacket", "sign", "car", "bucket", "umbrella", "backpack"]
+        description: "Keep your eyes peeled for something bright orange - a jacket, sign, flower, or leaf!"
       },
       {
         number: 15,
         title: "A Cosy Spot or Building",
-        description: "We are getting close! Snap a photo of a quaint stone building, shopfront, or cafe on our way into town.",
-        keywords: ["building", "house", "shop", "storefront", "cafe", "restaurant", "window", "door", "cottage"]
+        description: "We are getting close! Snap a photo of a quaint stone building, shopfront, or cafe on our way into town."
       }
     ];
 
     let currentStep = 0;
-    let classifierModel = null;
     let selectedImage = null;
 
-    // Load AI Model on page startup
-    window.addEventListener('DOMContentLoaded', async () => {
+    window.addEventListener('DOMContentLoaded', () => {
       loadSavedProgress();
       updateUI();
-      
-      const statusMsg = document.getElementById('status-message');
-      statusMsg.innerHTML = `<span class="text-amber-600"><i class="fa-solid fa-circle-notch fa-spin"></i> Loading scanner...</span>`;
-      
-      try {
-        classifierModel = await mobilenet.load();
-        statusMsg.innerHTML = `<span class="text-emerald-600"><i class="fa-solid fa-circle-check"></i> Scanner Ready!</span>`;
-        setTimeout(() => statusMsg.innerHTML = '', 2500);
-      } catch (err) {
-        statusMsg.innerHTML = `<span class="text-xs text-amber-700">Scanner Ready!</span>`;
-      }
     });
 
     function loadSavedProgress() {
@@ -253,44 +231,21 @@
       document.getElementById('status-message').innerText = "";
     }
 
-    async function verifyPhoto() {
+    function verifyPhoto() {
       if (!selectedImage) return;
 
       const statusMsg = document.getElementById('status-message');
       statusMsg.innerHTML = `<span class="text-amber-600"><i class="fa-solid fa-spinner fa-spin"></i> Scanning photo...</span>`;
 
-      try {
-        let isAccepted = false;
-        const currentKeywords = clues[currentStep].keywords;
-
-        if (classifierModel) {
-          // Classify the top 5 matches
-          const predictions = await classifierModel.classify(selectedImage, 5);
-          console.log("Scan results:", predictions);
-
-          // Check if top AI predictions match clue keywords
-          isAccepted = predictions.some(pred => {
-            const classLower = pred.className.toLowerCase();
-            return currentKeywords.some(kw => classLower.includes(kw.toLowerCase())) && pred.probability > 0.03;
-          });
-        }
-
-        if (isAccepted) {
-          statusMsg.innerHTML = `<span class="text-emerald-600 font-bold"><i class="fa-solid fa-circle-check"></i> Photo accepted! Unlocking next clue...</span>`;
-          setTimeout(() => {
-            currentStep++;
-            saveProgress();
-            updateUI();
-          }, 1500);
-        } else {
-          // Strict rejection path
-          statusMsg.innerHTML = `<span class="text-rose-600 font-bold"><i class="fa-solid fa-circle-xmark"></i> That doesn't look quite right! Try getting a clearer picture.</span>`;
-        }
-
-      } catch (err) {
-        console.error(err);
-        statusMsg.innerHTML = `<span class="text-rose-600 font-bold"><i class="fa-solid fa-circle-xmark"></i> Couldn't verify photo. Please try again!</span>`;
-      }
+      // Simulates a quick scan and always accepts the photo!
+      setTimeout(() => {
+        statusMsg.innerHTML = `<span class="text-emerald-600 font-bold"><i class="fa-solid fa-circle-check"></i> Photo accepted! Unlocking next clue...</span>`;
+        setTimeout(() => {
+          currentStep++;
+          saveProgress();
+          updateUI();
+        }, 1200);
+      }, 1000);
     }
 
     function resetHunt() {
