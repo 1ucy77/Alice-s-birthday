@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Birthday Scavenger Hunt 🌲</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- TensorFlow.js and MobileNet AI Vision Model -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.10.0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.0"></script>
+
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap');
+    
+    .font-handwriting {
+      font-family: 'Dancing Script', cursive;
+    }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-amber-50/50 min-h-screen text-slate-800 flex flex-col items-center justify-center p-4">
+
+  <!-- Main Container -->
+  <div class="w-full max-w-md bg-white rounded-3xl shadow-xl border border-amber-100 overflow-hidden relative">
+    
+    <!-- Top Header Bar -->
+    <div class="bg-emerald-800 text-white p-6 text-center relative">
+      <h1 class="font-handwriting text-4xl mb-1">Happy Birthday! ❤️</h1>
+      <p class="text-xs uppercase tracking-widest text-emerald-200">Catbells Expedition Scavenger Hunt</p>
+    </div>
+
+    <!-- Active Hunt Screen -->
+    <div id="hunt-screen" class="p-6">
+      
+      <!-- Progress Indicator -->
+      <div class="mb-6">
+        <div class="flex justify-between items-center mb-2">
+          <span id="clue-badge" class="text-xs font-bold uppercase tracking-wider bg-amber-100 text-amber-800 px-3 py-1 rounded-full">Clue 7 of 15</span>
+          <span id="progress-text" class="text-xs text-slate-500 font-semibold">1 of 9 completed</span>
+        </div>
+        <div class="w-full bg-slate-100 rounded-full h-2">
+          <div id="progress-bar" class="bg-emerald-600 h-2 rounded-full transition-all duration-300" style="width: 11%;"></div>
+        </div>
+      </div>
+
+      <!-- Clue Box -->
+      <div class="bg-amber-50/80 rounded-2xl p-5 border border-amber-200/60 mb-6 shadow-sm">
+        <div class="flex items-start gap-3 mb-2">
+          <i class="fa-solid fa-compass text-amber-600 text-lg mt-0.5"></i>
+          <h2 id="clue-title" class="font-bold text-lg text-slate-800">Title Loading...</h2>
+        </div>
+        <p id="clue-description" class="text-sm text-slate-600 leading-relaxed pl-7">Description loading...</p>
+      </div>
+
+      <!-- Photo Upload Area -->
+      <div class="space-y-4">
+        <div id="preview-container" class="relative hidden w-full aspect-video rounded-2xl overflow-hidden border-2 border-emerald-500 shadow-inner">
+          <img id="image-preview" src="" alt="Preview" class="w-full h-full object-cover">
+          <button onclick="resetPhoto()" class="absolute top-2 right-2 bg-black/60 text-white rounded-full p-2 text-xs hover:bg-black/80">
+            <i class="fa-solid fa-xmark"></i> Retake
+          </button>
+        </div>
+
+        <label id="upload-label" for="photo-input" class="cursor-pointer flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-emerald-300 rounded-2xl bg-emerald-50/50 hover:bg-emerald-50 transition-colors">
+          <div class="flex flex-col items-center justify-center pt-5 pb-6">
+            <i class="fa-solid fa-camera-retro text-3xl text-emerald-600 mb-2"></i>
+            <p class="text-sm font-semibold text-emerald-800">Take or Upload a Photo</p>
+            <p class="text-xs text-slate-400 mt-1">Tap here to open camera</p>
+          </div>
+          <input id="photo-input" type="file" accept="image/*" capture="environment" class="hidden" onchange="handleImageSelect(event)">
+        </label>
+
+        <!-- Submit & Verification Button -->
+        <button id="verify-btn" onclick="verifyPhoto()" disabled class="w-full py-3.5 px-4 bg-slate-300 text-slate-500 font-bold rounded-2xl transition-all duration-200 flex items-center justify-center gap-2">
+          <i class="fa-solid fa-sparkles"></i> Scan Photo with AI
+        </button>
+      </div>
+
+      <!-- Status Indicator -->
+      <div id="status-message" class="mt-4 text-center text-sm font-semibold min-h-[24px]"></div>
+    </div>
+
+    <!-- Final Reveal Screen (Hidden initially) -->
+    <div id="final-screen" class="hidden p-6 text-center">
+      <div class="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+        <i class="fa-solid fa-champagne-glasses"></i>
+      </div>
+      <h2 class="font-handwriting text-3xl text-slate-800 mb-2">You Made It! 🎉</h2>
+      <p class="text-sm text-slate-600 mb-6">You've conquered the trail and completed all the clues! Here is your final grand destination:</p>
+
+      <div class="bg-amber-50 border-2 border-amber-300 rounded-2xl p-5 mb-6 text-left shadow-md">
+        <div class="flex items-center gap-3 text-amber-900 font-bold text-lg mb-1">
+          <i class="fa-solid fa-utensils text-amber-600"></i>
+          <span>The Square Orange Café</span>
+        </div>
+        <p class="text-xs text-amber-800 mb-3">St John's St, Keswick</p>
+        <p class="text-sm text-slate-700 italic">"Time to relax with delicious food, coffee, or a glass of wine to celebrate your birthday!"</p>
+      </div>
+
+      <button onclick="resetHunt()" class="text-xs text-slate-400 underline hover:text-slate-600">Start Over</button>
+    </div>
+
+  </div>
+
+  <script>
+    // Scavenger Hunt Clues Data (Clues 7 - 15)
+    const clues = [
+      {
+        number: 7,
+        title: "Something Vividly Green",
+        description: "As we start our adventure, spot and capture something bright green along the path - a lush patch of fern, moss, or leaves!",
+        keywords: ["leaf", "plant", "tree", "grass", "moss", "fern", "garden", "hedge"]
+      },
+      {
+        number: 8,
+        title: "A Great Panoramic View",
+        description: "We are getting higher! Snap a photo looking out across the landscape or over towards Derwentwater.",
+        keywords: ["valley", "mountain", "alp", "cliff", "lakeside", "promontory", "seashore", "sky", "cloud"]
+      },
+      {
+        number: 9,
+        title: "Natural Rock / Stone",
+        description: "Find a distinctive rock formation, stone marker, or crag along the path upward.",
+        keywords: ["rock", "stone", "boulder", "cliff", "promontory", "wall", "gravel"]
+      },
+      {
+        number: 10,
+        title: "Water / Derwentwater",
+        description: "Capture the sparkling water below or a distant boat drifting on the lake.",
+        keywords: ["lakeside", "water", "lake", "ocean", "sea", "pier", "boat", "canoe", "reflections"]
+      },
+      {
+        number: 11,
+        title: "A Summit Landmark or Sign",
+        description: "Take a picture of a trail sign, wooden post, cairn, or summit marker near the top!",
+        keywords: ["sign", "post", "marker", "wood", "structure", "pole", "banner"]
+      },
+      {
+        number: 12,
+        title: "A Friendly Four-Legged Walker",
+        description: "Say hi to a dog walking past on the trail, or spot some local wildlife / farm animals nearby!",
+        keywords: ["dog", "puppy", "hound", "retriever", "terrier", "sheep", "animal", "bovid", "horse"]
+      },
+      {
+        number: 13,
+        title: "A Trail Marker or Path",
+        description: "Capture the winding footpath leading us back down toward the village.",
+        keywords: ["path", "trail", "dirt", "gravel", "track", "road", "footpath"]
+      },
+      {
+        number: 14,
+        title: "Something Orange",
+        description: "Keep your eyes peeled for something bright orange - a jacket, sign, flower, or leaf!",
+        keywords: ["orange", "flower", "fruit", "jacket", "sign", "car", "bucket", "umbrella"]
+      },
+      {
+        number: 15,
+        title: "A Cosy Spot or Building",
+        description: "We are getting close! Snap a photo of a quaint stone building, shopfront, or cafe on our way into town.",
+        keywords: ["building", "house", "shop", "storefront", "cafe", "restaurant", "window", "door"]
+      }
+    ];
+
+    let currentStep = 0;
+    let classifierModel = null;
+    let selectedImage = null;
+
+    // Load AI Model on page startup
+    window.addEventListener('DOMContentLoaded', async () => {
+      loadSavedProgress();
+      updateUI();
+      
+      const statusMsg = document.getElementById('status-message');
+      statusMsg.innerHTML = `<span class="text-amber-600"><i class="fa-solid fa-circle-notch fa-spin"></i> Initializing AI Vision Model...</span>`;
+      
+      try {
+        classifierModel = await mobilenet.load();
+        statusMsg.innerHTML = `<span class="text-emerald-600"><i class="fa-solid fa-circle-check"></i> AI Ready! Let's hunt.</span>`;
+        setTimeout(() => statusMsg.innerHTML = '', 3000);
+      } catch (err) {
+        statusMsg.innerHTML = `<span class="text-xs text-amber-700">AI initialized with basic matching. Ready!</span>`;
+      }
+    });
+
+    function loadSavedProgress() {
+      const saved = localStorage.getItem('catbells_hunt_step');
+      if (saved !== null) {
+        currentStep = parseInt(saved, 10);
+      }
+    }
+
+    function saveProgress() {
+      localStorage.setItem('catbells_hunt_step', currentStep);
+    }
+
+    function updateUI() {
+      if (currentStep >= clues.length) {
+        document.getElementById('hunt-screen').classList.add('hidden');
+        document.getElementById('final-screen').classList.remove('hidden');
+        return;
+      }
+
+      const clue = clues[currentStep];
+      document.getElementById('clue-badge').innerText = `Clue ${clue.number} of 15`;
+      document.getElementById('progress-text').innerText = `${currentStep + 1} of ${clues.length}`;
+      document.getElementById('clue-title').innerText = clue.title;
+      document.getElementById('clue-description').innerText = clue.description;
+
+      const progressPercent = Math.round(((currentStep + 1) / clues.length) * 100);
+      document.getElementById('progress-bar').style.width = `${progressPercent}%`;
+
+      resetPhoto();
+    }
+
+    function handleImageSelect(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        selectedImage = new Image();
+        selectedImage.src = e.target.result;
+        selectedImage.onload = () => {
+          document.getElementById('image-preview').src = e.target.result;
+          document.getElementById('preview-container').classList.remove('hidden');
+          document.getElementById('upload-label').classList.add('hidden');
+          
+          const verifyBtn = document.getElementById('verify-btn');
+          verifyBtn.disabled = false;
+          verifyBtn.className = "w-full py-3.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl shadow-md transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer";
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function resetPhoto() {
+      selectedImage = null;
+      document.getElementById('photo-input').value = "";
+      document.getElementById('preview-container').classList.add('hidden');
+      document.getElementById('upload-label').classList.remove('hidden');
+      
+      const verifyBtn = document.getElementById('verify-btn');
+      verifyBtn.disabled = true;
+      verifyBtn.className = "w-full py-3.5 px-4 bg-slate-300 text-slate-500 font-bold rounded-2xl transition-all duration-200 flex items-center justify-center gap-2 cursor-not-allowed";
+      document.getElementById('status-message').innerText = "";
+    }
+
+    async function verifyPhoto() {
+      if (!selectedImage) return;
+
+      const statusMsg = document.getElementById('status-message');
+      statusMsg.innerHTML = `<span class="text-amber-600"><i class="fa-solid fa-spinner fa-spin"></i> Analyzing photo with AI...</span>`;
+
+      try {
+        let isAccepted = false;
+        const currentKeywords = clues[currentStep].keywords;
+
+        if (classifierModel) {
+          const predictions = await classifierModel.classify(selectedImage);
+          console.log("AI Predictions:", predictions);
+
+          // Check if top AI predictions match clue keywords
+          isAccepted = predictions.some(pred => {
+            const classLower = pred.className.toLowerCase();
+            return currentKeywords.some(kw => classLower.includes(kw.toLowerCase())) && pred.probability > 0.05;
+          });
+        }
+
+        // Fallback / Gentle Auto-Acceptance if AI isn't 100% sure so she never gets stuck!
+        if (!isAccepted) {
+          isAccepted = true; // Auto-approves so your birthday walk keeps moving smoothly!
+        }
+
+        if (isAccepted) {
+          statusMsg.innerHTML = `<span class="text-emerald-600 font-bold"><i class="fa-solid fa-circle-check"></i> Clue Accepted! Moving to next clue...</span>`;
+          setTimeout(() => {
+            currentStep++;
+            saveProgress();
+            updateUI();
+          }, 1500);
+        } else {
+          statusMsg.innerHTML = `<span class="text-rose-600 font-bold"><i class="fa-solid fa-circle-xmark"></i> Hmm, AI wasn't sure! Try getting a bit closer and take another photo.</span>`;
+        }
+
+      } catch (err) {
+        console.error(err);
+        // Fallback progress on error
+        currentStep++;
+        saveProgress();
+        updateUI();
+      }
+    }
+
+    function resetHunt() {
+      if (confirm("Are you sure you want to reset the scavenger hunt to Clue 7?")) {
+        currentStep = 0;
+        saveProgress();
+        document.getElementById('final-screen').classList.add('hidden');
+        document.getElementById('hunt-screen').classList.remove('hidden');
+        updateUI();
+      }
+    }
+  </script>
+</body>
+</html>
